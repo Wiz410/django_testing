@@ -35,13 +35,13 @@ def much_news():
     """Фикстура с несколькими новостями."""
     today = datetime.today()
     news = News.objects.bulk_create(
-            News(
-                title=f'Новость {index}',
-                text='Текст новости.',
-                date=today - timedelta(days=index),
-            )
-            for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+        News(
+            title=f'Новость {index}',
+            text='Текст новости.',
+            date=today - timedelta(days=index),
         )
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+    )
     return news
 
 
@@ -62,10 +62,10 @@ def much_comment(user, news):
     for index in range(2):
         now = timezone.now()
         comment = Comment.objects.create(
-                news=news,
-                author=user,
-                text=f'Комментарий к новости {index}',
-            )
+            news=news,
+            author=user,
+            text=f'Комментарий к новости {index}',
+        )
         comment.created = now + timedelta(days=index)
         comment.save()
     return comment
