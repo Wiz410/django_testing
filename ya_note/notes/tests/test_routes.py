@@ -22,8 +22,11 @@ class TestRoutes(TestCase):
             author=cls.author
         )
 
-    def test_page_available(self):
-        """Тест страниц анонима."""
+    def test_page_available_for_anon(self):
+        """
+        Тест доступных страниц для анонима.
+        Страницы должни быть доступны не авторизированному пользователю.
+        """
         path_urls = (
             ('notes:home'),
             ('users:login'),
@@ -40,8 +43,11 @@ class TestRoutes(TestCase):
                     msg=f'Страница по адресу "{url}" не доступна анониму'
                 )
 
-    def test_pages_user(self):
-        """Тест страниц авторизованного пользователя"""
+    def test_pages_available_for_user(self):
+        """
+        Тест доступных страниц для авторизованного пользователя.
+        Страницы должны быть доступны авторизированному пользователю.
+        """
         path_url = (
             ('notes:list'),
             ('notes:add'),
@@ -61,8 +67,12 @@ class TestRoutes(TestCase):
                     )
                 )
 
-    def test_redirect_page(self):
-        """Тест редиректа анонима."""
+    def test_redirect_page_for_anon(self):
+        """
+        Тест страниц редиректа анонима.
+        Страницы должны перенаправлять не авторизованного пользователя
+        на страницу авторизации.
+        """
         login_url = reverse('users:login')
 
         path_urls = (
@@ -82,13 +92,17 @@ class TestRoutes(TestCase):
                     response,
                     redirect_url,
                     msg_prefix=(
-                        f'Страница по адресу "{url}" должна отпровалять '
+                        f'Страница по адресу "{url}" должна отправалять '
                         f'анонима на страницу логина'
                     )
                 )
 
-    def test_page_note(self):
-        """Тест страницы записи."""
+    def test_page_note_for_different_user(self):
+        """
+        Тест страницы заметки для разных пользователей.
+        Страницы должны быть доступны автору заметки
+        и не доступны другому пользователю.
+        """
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.reader, HTTPStatus.NOT_FOUND),
@@ -104,22 +118,14 @@ class TestRoutes(TestCase):
                 with self.subTest(user=user, urls=urls):
                     url = reverse(urls, kwargs={'slug': self.note.slug})
                     response = self.client.get(url)
-                    if user is self.author:
-                        self.assertEqual(
-                            response.status_code,
-                            status,
-                            msg=(
-                                f'Автору заметки страница по адресу '
-                                f'"{url}" не доступна'
-                            )
+                    self.assertEqual(
+                        response.status_code,
+                        status,
+                        msg=(
+                            f'Для автора заметки страница "{url}" '
+                            f'должна быть доступна 200, '
+                            f'а для другого пользователя нет 404. '
+                            f'Пользователь: "{user}" '
+                            f'получил код: "{response.status_code}"'
                         )
-                    else:
-                        self.assertEqual(
-                            response.status_code,
-                            status,
-                            msg=(
-                                f'Авторизованному пользователю доступна '
-                                f'страница чужой заметки по адресу '
-                                f'"{url}"'
-                            )
-                        )
+                    )

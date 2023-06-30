@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.utils import timezone
+from django.urls import reverse
 import pytest
 
 from news.models import News, Comment
@@ -73,7 +74,13 @@ def much_comment(user, news):
 
 @pytest.fixture
 def form_data_comment():
-    """Фикстура формы комментария"""
+    """Фикстура формы комментария."""
     return {
         'text': 'Новый комментарий к новости',
     }
+
+
+@pytest.fixture
+def url_for_news(news):
+    """Фикстура ссылки на новость."""
+    return reverse('news:detail', kwargs={'pk': news.id})

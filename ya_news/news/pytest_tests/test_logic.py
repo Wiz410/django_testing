@@ -9,14 +9,23 @@ from news.forms import WARNING
 
 
 @pytest.mark.django_db
-def test_user_create_comment(user_client, user, news, form_data_comment):
-    """Тест создания комментария авторизированым пользователем."""
+def test_user_create_comment(
+    user_client,
+    user,
+    news,
+    form_data_comment,
+):
+    """
+    Тест создания комментария авторизированым пользователем.
+    Авторизованный пользователь должен
+    иметь возможность написать комментарий к новости.
+    """
     url = reverse('news:detail', kwargs={'pk': news.id})
     redirect_url = f'{url}#comments'
     response = user_client.post(url, data=form_data_comment)
     assertRedirects(response, redirect_url)
     assert Comment.objects.count() == 1, (
-        'Авторичированный пользователь не может '
+        'Авторизованный пользователь не может '
         'оставить комментарий под новостью'
     )
     comment = Comment.objects.get()
@@ -27,13 +36,21 @@ def test_user_create_comment(user_client, user, news, form_data_comment):
         'Автор комментария при сохранении отличается'
     )
     assert comment.news == news, (
-        'Новость для которой был комментария при сохранении отличается'
+        'Новость для которой был комментарий при сохранении отличается'
     )
 
 
 @pytest.mark.django_db
-def test_anon_no_create_comment(client, news, form_data_comment):
-    """Тест создания комментария анонимом."""
+def test_anon_no_create_comment(
+    client,
+    news,
+    form_data_comment,
+):
+    """
+    Тест создания комментария анонимом.
+    Не Авторизованный пользователь не должен иметь
+    возможности написать комментарий к новости.
+    """
     url = reverse('news:detail', kwargs={'pk': news.id})
     client.post(url, data=form_data_comment)
     assert Comment.objects.count() == 0, (
@@ -42,8 +59,16 @@ def test_anon_no_create_comment(client, news, form_data_comment):
 
 
 @pytest.mark.django_db
-def test_badwords_in_comment(user_client, news, form_data_comment):
-    """Тест ошибки запрещеных слов."""
+def test_badwords_in_comment(
+    user_client,
+    news,
+    form_data_comment,
+):
+    """
+    Тест ошибки запрещенных слов.
+    Если в комментарии обнаруженно запрещенное слово
+    форма должна вернуть ошибку.
+    """
     url = reverse('news:detail', kwargs={'pk': news.id})
     form_data_comment['text'] = 'редиска выросла'
     response = user_client.post(url, data=form_data_comment)
@@ -59,8 +84,17 @@ def test_badwords_in_comment(user_client, news, form_data_comment):
 
 
 @pytest.mark.django_db
-def test_author_edit_comment(user_client, news, comment, form_data_comment):
-    """Тест редактирования комментария автором."""
+def test_author_edit_comment(
+    user_client,
+    news,
+    comment,
+    form_data_comment,
+):
+    """
+    Тест редактирования комментария автором.
+    Автор комментария должен иметь
+    возможность редактировать его.
+    """
     EDIT_TEXT = 'Измененный комментарий к новости'
     news_url = reverse('news:detail', kwargs={'pk': news.id})
     redirect_url = f'{news_url}#comments'
@@ -79,9 +113,13 @@ def test_no_author_edit_comment(
     admin_client,
     news,
     comment,
-    form_data_comment
+    form_data_comment,
 ):
-    """Тест редактирования комментария авторизованным пользователем."""
+    """
+    Тест редактирования комментария не автором.
+    Только автор комментария должен иметь
+    возможность редактировать его.
+    """
     EDIT_TEXT = 'Измененный комментарий к новости'
     url = reverse('news:edit', kwargs={'pk': comment.id})
     form_data_comment['text'] = EDIT_TEXT
@@ -94,8 +132,16 @@ def test_no_author_edit_comment(
 
 
 @pytest.mark.django_db
-def test_author_delete_comment(user_client, news, comment):
-    """Тест удаления комментария автором."""
+def test_author_delete_comment(
+    user_client,
+    news,
+    comment,
+):
+    """
+    Тест удаления комментария автором.
+    Автор комментария должен иметь
+    возможность удалить его.
+    """
     url = reverse('news:delete', kwargs={'pk': comment.id})
     news_url = reverse('news:detail', kwargs={'pk': news.id})
     redirect_url = f'{news_url}#comments'
@@ -107,8 +153,16 @@ def test_author_delete_comment(user_client, news, comment):
 
 
 @pytest.mark.django_db
-def test_no_author_delete_comment(admin_client, news, comment):
-    """Тест удаления комментария авторизованным пользователем."""
+def test_no_author_delete_comment(
+    admin_client,
+    news,
+    comment,
+):
+    """
+    Тест удаления комментария не автором.
+    Только автор комментария должен иметь
+    возможность удалить его.
+    """
     url = reverse('news:delete', kwargs={'pk': comment.id})
     response = admin_client.delete(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
