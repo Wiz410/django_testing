@@ -45,6 +45,7 @@ pip install -r requirements.txt
 ```
 
 **Тест для YaNews:**
+
 Перейдите в директорию проекта и запустите тесты:
 ```bash
 cd ya_news
@@ -52,6 +53,7 @@ pytest
 ```
 
 **Тест для YaNote:**
+
 Перейдите в директорию проекта и запустите тесты:
 ```bash
 cd ya_note
