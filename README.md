@@ -5,13 +5,13 @@
 
 Протестирован с использованием `pytest`.
 
-[Тесты находятся в директории `ya_news/news/pytest_tests/`](ya_news/news/pytest_tests/)
+Тесты находятся в директории [`ya_news/news/pytest_tests/`](ya_news/news/pytest_tests/)
 
 **YaNote:** электронная записная книжка.
 
 Протестирован с использованием `unittest`.
 
-[Тесты находятся в директории `ya_note/notes/tests/`](ya_note/notes/tests/)
+Тесты находятся в директории [`ya_note/notes/tests/`](ya_note/notes/tests/)
 ## Технологии
 - [Python 3.9.10](https://docs.python.org/3.9/index.html)
 - [Django 3.2.15](https://docs.djangoproject.com/en/3.2/)
