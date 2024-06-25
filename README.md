@@ -60,5 +60,5 @@ cd ya_note
 python manage.py test -v 2
 ```
 
-#### Авторы
+#### Автор
 - [Danila Polunin](https://github.com/Wiz410)
